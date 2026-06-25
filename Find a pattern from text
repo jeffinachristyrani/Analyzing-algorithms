@@ -1,0 +1,48 @@
+import java.util.*;
+
+class SubstringArray {
+   static int findlength(char[] a){
+      int count=0;
+      for(char i:a){
+         count++;
+      }
+      return count;
+   }
+   static int search(char[] text, char[] pattern) {
+      int n=findlength(text);
+      int m=findlength(pattern);
+      for (int i = 0; i <= n - m; i++) {
+         int j;
+         System.out.println(text);
+         for (j = 0; j < m; j++) {
+            for(int h=0;h<i;h++){
+               System.out.print(" ");
+            }
+            System.out.println(pattern);
+            if (text[i + j] != pattern[j])
+               break;
+            }
+            if (j == m) {
+               return  i;
+            }
+      }
+      return -1;
+    }
+   public static void main(String[] args) {
+       Scanner sc = new Scanner(System.in);
+       System.out.print("Enter text: ");
+       String txt = sc.nextLine();
+       System.out.print("Enter pattern: ");
+       String pat = sc.nextLine();
+       char[] text = txt.toCharArray();
+       char[] pattern = pat.toCharArray();
+       int y=search(text, pattern);
+       if(y==-1){
+
+System.out.println("Pattern not found in the text.");
+       }
+       else{
+          System.out.println("Pattern found at index "+y+" of the text.");
+       }
+    }
+}
