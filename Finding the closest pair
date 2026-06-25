@@ -1,0 +1,41 @@
+import java.util.*;
+class ClosestPair {
+   static class Point {
+      double x, y;
+   }
+   static double distance(Point p1, Point p2) {
+       return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
+   }
+   static double closestPair(Point[] points, int n) {
+      double minDist = Double.MAX_VALUE;
+      int p1=0;
+      int p2=0;
+      for (int i = 0; i < n - 1; i++) {
+         for (int j = i + 1; j < n; j++) {
+            double dist = distance(points[i], points[j]);
+            System.out.println("The distance between points " + (i+1) + " and " + (j+1) + " = " +dist);
+            if (dist < minDist) {
+               minDist = dist;
+               p1=i;
+               p2=j;
+            }
+         }
+      }
+      System.out.println("The closest points are: "+(p1+1)+" and "+(p2+1));
+      return minDist;
+   }
+   public static void main(String[] args) {
+      Scanner sc = new Scanner(System.in);
+      System.out.print("Enter number of points: ");
+      int n = sc.nextInt();
+      Point[] points = new Point[n];
+      for (int i = 0; i < n; i++) {
+         points[i] = new Point();
+         System.out.print("Enter x and y coordinates of point " + (i + 1) + ": ");
+         points[i].x = sc.nextDouble();
+         points[i].y = sc.nextDouble();
+      }
+      double result = closestPair(points, n);
+      System.out.println("Closest distance = " + result);
+   }
+}
