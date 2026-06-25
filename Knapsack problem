@@ -1,0 +1,144 @@
+import java.util.*;
+
+class Item {
+    int weight, value, index;
+    double ratio;
+
+    public Item(int weight, int value, int index) {
+        this.weight = weight;
+        this.value = value;
+        this.index = index;
+        this.ratio = (double) value / weight;
+    }
+}
+
+class Node {
+    int level, profit, weight;
+    double bound;
+    boolean[] taken;
+
+    public Node(int n) {
+        taken = new boolean[n];
+    }
+}
+
+public class Knapsack {
+
+    static double bound(Node u, int n, int W, Item[] items) {
+        if (u.weight >= W)
+            return 0;
+
+        double profitBound = u.profit;
+        int j = u.level + 1;
+        int totalWeight = u.weight;
+
+        while (j < n && totalWeight + items[j].weight <= W) {
+            totalWeight += items[j].weight;
+            profitBound += items[j].value;
+            j++;
+        }
+
+        if (j < n)
+            profitBound += (W - totalWeight) * items[j].ratio;
+
+        return profitBound;
+    }
+
+    static void knapsack(int W, Item[] items, int n) {
+
+        Arrays.sort(items, (a, b) -> Double.compare(b.ratio, a.ratio));
+
+        PriorityQueue<Node> pq = new PriorityQueue<>(
+                (a, b) -> Double.compare(b.bound, a.bound));
+
+        Node u = new Node(n);
+        u.level = -1;
+        u.profit = 0;
+        u.weight = 0;
+        u.bound = bound(u, n, W, items);
+
+        pq.add(u);
+
+        int maxProfit = 0;
+        boolean[] bestTaken = new boolean[n];
+
+        while (!pq.isEmpty()) {
+            u = pq.poll();
+
+            if (u.bound <= maxProfit)
+                continue;
+
+            Node v = new Node(n);
+            v.level = u.level + 1;
+
+            if (v.level >= n)
+                continue;
+
+            // INCLUDE item
+            v.weight = u.weight + items[v.level].weight;
+            v.profit = u.profit + items[v.level].value;
+            System.arraycopy(u.taken, 0, v.taken, 0, n);
+            v.taken[v.level] = true;
+
+            if (v.weight <= W && v.profit > maxProfit) {
+                maxProfit = v.profit;
+                bestTaken = v.taken.clone();
+            }
+
+            v.bound = bound(v, n, W, items);
+            if (v.bound > maxProfit)
+                pq.add(v);
+
+            // EXCLUDE item
+            Node v2 = new Node(n);
+            v2.level = u.level + 1;
+            v2.weight = u.weight;
+            v2.profit = u.profit;
+            System.arraycopy(u.taken, 0, v2.taken, 0, n);
+
+            v2.bound = bound(v2, n, W, items);
+            if (v2.bound > maxProfit)
+                pq.add(v2);
+        }
+
+        // OUTPUT
+        System.out.println("\nMaximum Profit: " + maxProfit);
+        System.out.println("Selected Items:");
+
+        for (int i = 0; i < n; i++) {
+            if (bestTaken[i]) {
+                System.out.println(
+                    "Item " + items[i].index +
+                    " (Weight: " + items[i].weight +
+                    ", Value: " + items[i].value + ")"
+                );
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of items: ");
+        int n = sc.nextInt();
+
+        Item[] items = new Item[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter weight of item " + (i + 1) + ": ");
+            int w = sc.nextInt();
+
+            System.out.print("Enter value of item " + (i + 1) + ": ");
+            int v = sc.nextInt();
+
+            items[i] = new Item(w, v, i + 1);
+        }
+
+        System.out.print("Enter knapsack capacity: ");
+        int W = sc.nextInt();
+
+        knapsack(W, items, n);
+
+        sc.close();
+    }
+}
