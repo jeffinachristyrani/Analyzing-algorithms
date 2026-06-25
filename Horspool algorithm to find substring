@@ -1,0 +1,48 @@
+import java.util.*;
+
+public class Horspool {
+
+    public static int[] shiftTable(String p) {
+        int m = p.length();
+        int[] t = new int[256];
+        Arrays.fill(t, m);
+        for (int i = 0; i < m - 1; i++)
+            t[p.charAt(i)] = m - 1 - i;
+        return t;
+    }
+
+    public static int horspool(String text, String p) {
+        int n = text.length(), m = p.length();
+        int[] t = shiftTable(p);
+        int i = m - 1;
+
+        while (i < n) {
+            int start = i - m + 1;
+
+            System.out.println(text);
+            for (int k = 0; k < start; k++)
+                System.out.print(" ");
+            System.out.println(p + "\n");
+
+            int k = 0;
+            while (k < m && p.charAt(m - 1 - k) == text.charAt(i - k))
+                k++;
+
+            if (k == m) return start;
+
+            i += t[text.charAt(i)];
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter Text: ");
+        String text = sc.nextLine();
+        System.out.println("Enter pattern: ");
+        String p = sc.nextLine();
+
+        int pos = horspool(text, p);
+        System.out.println(pos == -1 ? "Pattern NOT found" : "Pattern found at index: " + pos);
+    }
+}
